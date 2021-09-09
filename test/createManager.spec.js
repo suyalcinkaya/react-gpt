@@ -101,7 +101,7 @@ describe("createManager", () => {
 
     it("loads gpt", done => {
         adManager
-            .load("//www.googletagservices.com/tag/js/gpt.js")
+            .load("https://securepubads.g.doubleclick.net/tag/js/gpt.js")
             .then(result => {
                 expect(result).to.be.an("object");
                 expect(adManager.isLoaded).to.be.true;
@@ -521,14 +521,12 @@ describe("createManager", () => {
         adManager.addInstance(instance2);
 
         setTimeout(() => {
-            expect(updateCorrelator.calledOnce).to.be.false;
             expect(forceUpdate.calledOnce).to.be.false;
             expect(forceUpdate2.calledOnce).to.be.false;
 
             googletag.apiReady = true;
 
             setTimeout(() => {
-                expect(updateCorrelator.calledOnce).to.be.true;
                 expect(forceUpdate.calledOnce).to.be.true;
                 expect(forceUpdate2.calledOnce).to.be.true;
 

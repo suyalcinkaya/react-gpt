@@ -429,7 +429,7 @@ export class AdManager extends EventEmitter {
         const instances = this.getMountedInstances();
         instances.forEach((instance, i) => {
             if (i === 0) {
-                this.updateCorrelator();
+                this.googletag.destroySlots();
             }
             instance.forceUpdate();
         });
@@ -455,7 +455,9 @@ export class AdManager extends EventEmitter {
         if (!this.pubadsReady) {
             return false;
         }
-        this.googletag.pubads().updateCorrelator();
+
+        // Deprecated
+        // this.googletag.pubads().updateCorrelator();
 
         return true;
     }
@@ -492,14 +494,22 @@ export class AdManager extends EventEmitter {
                 if (window.googletag && window.googletag.apiReady) {
                     onLoad();
                 } else {
-                    const script = document.createElement("script");
-                    script.async = true;
-                    script.onload = onLoad;
-                    script.onerror = () => {
-                        reject(new Error("failed to load script"));
-                    };
-                    script.src = url;
-                    document.head.appendChild(script);
+                    window.addEventListener(
+                        "load",
+                        async () => {
+                            setTimeout(() => {
+                                const script = document.createElement("script");
+                                script.defer = true;
+                                script.onload = onLoad;
+                                script.onerror = () => {
+                                    reject(new Error("failed to load script"));
+                                };
+                                script.src = url;
+                                document.head.appendChild(script);
+                            }, 500);
+                        },
+                        {once: true}
+                    );
                 }
             }))
         );
